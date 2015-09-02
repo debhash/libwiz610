@@ -56,6 +56,7 @@ byte WIZ610::getModem(const char *command, uint16_t timeout, char *buf) {
 
   // Wait for response until timeout expires
   count = getsTimeout(buf, timeout);    // Timeout review
+
   if (count) {
     ret = WIZ610_SUCCESS;
   }
