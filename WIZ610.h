@@ -116,9 +116,11 @@ class WIZ610 {
     void send(char *buf);
     void sendln(char *buf = "");
     void sendln(unsigned int);
-    char *receive(char *buf);
-    byte enterConfig(void);
-    byte exitConfig(void);
+    void enterConfig(void);
+    void exitConfig(void);
+    byte setWIRCfg(byte wirBand, byte opMode, char *SSID, byte channel);
+    byte setSecurity(byte authMode, byte encrypt, byte keyLength, byte keyFormatWEP, byte keyFormatWPA, char *keyValue);
+    byte serialCfg(byte baudrate, byte databits, byte parity, byte flowCtrl, byte stopbits);
     void initBaudrate(void);
     void pwrOff(void);
     void pwrOn(void);
@@ -129,7 +131,6 @@ class WIZ610 {
   private:
     char state;
     char response[];
-    byte requestModem(const char *command, uint16_t timeout, boolean check, char *buf);
     byte getModem(const char *command, uint16_t timeout, char *buf);
     byte setModem(const char *command, uint16_t timeout);
     byte getsTimeout(char *buf, uint16_t timeout);
