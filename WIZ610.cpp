@@ -459,7 +459,7 @@ Receive char from WiFi module
 @return incomming byte
 */
 char *WIZ610::receive(char *buf) {
-  getsTimeout(buf, 1000);
+  getsTimeout(buf, 2000);
   return buf;
 }
 
@@ -524,43 +524,6 @@ Timeout review
 @param timeout Max. waiting time for current command execution
 @return Received characters
 */
-byte WIZ610::setsTimeout(char *buf, uint16_t timeout) {
-
-  byte count = 0;
-  long timeIsOut = 0;
-  char c;
-  byte ret = WIZ610_FAIL;
-  *buf = 0;
-  timeIsOut = millis() + timeout;
-
-  do{
-    while(modem->available()){
-      count++;
-      c = modem->read();
-      *buf++ = c;
-    }
-    if(strstr(buf, response)){
-        ret = WIZ610_SUCCESS;
-    }
-  }
-  while(timeIsOut > millis() && count < (BUF_LENGTH - 1) && ret == WIZ610_SUCCESS);
-
-  if(ret != WIZ610_SUCCESS){
-    if(timeIsOut <= millis()){
-      ret = WIZ610_TIMEOUT;
-    }
-    else if(count >= (BUF_LENGTH - 1)){
-     ret = WIZ610_BUFFER_OVERFLOW ;
-    }
-  }
-  if (count != 0) {
-    *buf = 0;
-    count++;
-  }
-  return ret;
-}
-
-
 byte WIZ610::getsTimeout(char *buf, uint16_t timeout) {
   byte count = 0;
   long timeIsOut = 0;
