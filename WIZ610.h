@@ -112,7 +112,7 @@ class WIZ610 {
   public:
     WIZ610(SoftwareSerial *modemPort);
     char * getIP();
-
+    char *receive(char *buf);
     void send(char *buf);
     void sendln(char *buf = "");
     void sendln(unsigned int);
@@ -121,6 +121,7 @@ class WIZ610 {
     byte setWIRCfg(byte wirBand, byte opMode, char *SSID, byte channel);
     byte setSecurity(byte authMode, byte encrypt, byte keyLength, byte keyFormatWEP, byte keyFormatWPA, char *keyValue);
     byte serialCfg(byte baudrate, byte databits, byte parity, byte flowCtrl, byte stopbits);
+    byte serialClientCfg(byte protocol, char *ipAddr, char *port, char *recInterval);
     void initBaudrate(void);
     void pwrOff(void);
     void pwrOn(void);
