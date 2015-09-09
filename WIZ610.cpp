@@ -152,7 +152,6 @@ byte WIZ610::getModem(const char *command, uint16_t timeout, char *buf) {
   modem->print(SRT_DEL);
   modem->print(command);
   modem->print(END_DEL);
-  modem->flush();
 
   // Wait for response until timeout expires
   count = getsTimeout(buf, timeout);    // Timeout review
@@ -184,7 +183,6 @@ byte WIZ610::setModem(const char *command, uint16_t timeout) {
   modem->print(SRT_DEL);
   modem->print(command);
   modem->print(END_DEL);
-  modem->flush();
 
   count = getsTimeout(buf, timeout);    // Timeout review
   buf[3] = 0;
@@ -373,6 +371,62 @@ byte WIZ610::setWIRCfg(byte wirBand, byte opMode, char *SSID, byte channel){
 }
 
 /**
+Serial to wireless configuration / Client mode
+@param protocol Protocol that establishes communication before communication
+            WIZ610_TCP
+            WIZ610_UDP
+@param ipAddr Pointer to Server IP Address string
+@param port Server Port
+@param recInterval Set the interval retrying connecting to server (0-65535). Pointer to string
+@return status
+*/
+byte WIZ610::serialClientCfg(byte protocol, char *ipAddr, char *port, char *recInterval){
+  char str[60];
+  byte ret = WIZ610_SUCCESS;
+  char tmp[2];
+
+  // Set Client mode
+  if(ret == WIZ610_SUCCESS){
+    strcpy (str,"WM");
+    strcat (str, "0");
+    ret = setModem(str, 2000);
+  }
+
+  // Set Client Protocol
+  if(ret == WIZ610_SUCCESS){
+    tmp[0] = protocol + 48;
+    tmp[1] = 0;
+    strcpy (str,"WK");
+    strcat (str, tmp);
+    ret = setModem(str, 1000);
+  }
+
+  // Set  Port
+  if(ret == WIZ610_SUCCESS){
+    strcpy (str,"WP");
+    strcat (str, port);
+    ret = setModem(str, 2000);
+  }
+
+  // Set  Server Ip Address
+  if(ret == WIZ610_SUCCESS){
+    strcpy (str,"WX");
+    strcat (str, ipAddr);
+    ret = setModem(str, 2000);
+  }
+
+ // Set retry Time
+   if(ret == WIZ610_SUCCESS){
+    strcpy (str,"OI");//OT
+    strcat (str, recInterval);
+    Serial.println(str);
+    ret = setModem(str, 1000);
+  }
+
+  return ret;
+}
+
+/**
 Send char through WiFi module
 @param buf Pointer to output buffer string
 @return void
@@ -397,6 +451,16 @@ Send unsigned int with CR through WiFi module
 */
 void WIZ610::sendln(unsigned int n){
     modem->println( (unsigned long) n);
+}
+
+/**
+Receive char from WiFi module
+@param buf Pointer to input buffer string
+@return incomming byte
+*/
+char *WIZ610::receive(char *buf) {
+  getsTimeout(buf, 1000);
+  return buf;
 }
 
 /**
